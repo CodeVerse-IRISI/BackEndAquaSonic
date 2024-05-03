@@ -9,7 +9,9 @@ import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,9 +28,6 @@ public class SensorService {
         // Formatage de la date
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         String formattedDate = dateFormat.format(dateFromDB);
-
-        // Affichage de la date formatée
-        System.out.println("Date formatée : " + formattedDate);
 
         // Récupérer les données des capteurs pour aujourd'hui
         List<SensorData> sensorDataList = sensorDataRepository.findBySensor_idAndDate(sensor_id,formattedDate);
@@ -62,6 +61,56 @@ public class SensorService {
             return 0;
         }
     }
+
+    // Méthode pour calculer la gravité de la fuite
+    public double calculateSensorLeakGravity(String sensor_id) {
+        int leakRate = (int) calculateRateForToday(sensor_id);
+        // Récupérer les données des capteurs pour aujourd'hui
+        List<SensorDataDTO> sensorDataList = getSensorDataForToday(sensor_id);
+        // Comparer la moyenne avec un seuil prédéfini
+        double threshold = -5; // Assurez-vous que le seuil est correctement défini
+        int count = 0;
+
+        if (leakRate == 100) {
+            if (!sensorDataList.isEmpty()) {
+                for (SensorDataDTO appel : sensorDataList) {
+                    double averageTensions = calculateAverageTension(appel.getAmplitudes());
+                    if (averageTensions > threshold) {
+                        count++;
+                    }
+                }
+                // Calculer le taux de gravité de la fuite à partir de tous les appels
+                double gravityRate = ((double) count / sensorDataList.size()) * 100;
+               return gravityRate;
+            } else {
+                System.out.println("La liste des données de capteur est vide");
+            }
+        } else {
+            System.out.println("Le taux de réalité de fuite est < 100%");
+        }
+        return 0;
+    }
+
+
+    // Méthode pour calculer la moyenne des tensions d'un appel
+    private double calculateAverageTension(double[] tensions) {
+        double sum = 0.0;
+        for (double tension : tensions) {
+            sum += tension;
+        }
+        return sum / tensions.length;
+    }
+
+    public Map<String, Double> AllSensorDegreeGravity(){
+        List<SensorData> AllSensor = sensorDataRepository.findAll();
+        Map<String, Double> SensorsGravity = new HashMap<>();
+        for (SensorData sensor:AllSensor) {
+            double gravity= calculateSensorLeakGravity(sensor.getSensor_id());
+            SensorsGravity.put(sensor.getSensor_id(),gravity);
+        }
+        return SensorsGravity;
+    }
+
 
 
 
