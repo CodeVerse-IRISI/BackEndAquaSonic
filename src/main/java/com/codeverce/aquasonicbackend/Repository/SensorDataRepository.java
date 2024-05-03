@@ -14,4 +14,6 @@ public interface SensorDataRepository extends MongoRepository<SensorData, String
 
     @Query("{ 'sensor_id' : ?0 }")
     List<SensorData> findBySensorId(String sensorId);
+
+    List<SensorData> findAll();
 }
