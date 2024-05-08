@@ -39,4 +39,13 @@ public class SensorController {
         return ResponseEntity.ok(sensorsGravity);
     }
 
+    @GetMapping("/GetSensorDataFortwoDays/{sensor_id}")
+    public List<SensorData> GetSensorDataFortwoDays(@PathVariable String sensor_id){
+        return sensorService.getSensorDataForLastTwoDays(sensor_id);
+    }
+    @GetMapping("/GetAllSensorsDataFortwoDays")
+    public Map<String, List<SensorData>> GetAllSensorsDataFortwoDays(){
+        return  sensorService.getAllSensorsDataForLastTwoDays();
+    }
+
 }

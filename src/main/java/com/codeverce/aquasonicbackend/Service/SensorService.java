@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -114,8 +116,31 @@ public class SensorService {
 
 
 
-    public List<SensorData> getSensorDataBySensorId(String sensor_id){
-       return sensorDataRepository.findBySensorId(sensor_id);
+    public List<SensorData> getSensorDataForLastTwoDays(String sensor_id){
+       // Date actuelle
+        LocalDate currentDate = LocalDate.now();
+
+        // Date il y a deux jours
+        LocalDate twoDaysAgo = currentDate.minusDays(2);
+
+        // Formatter pour la date
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        // Convertir les dates en chaînes de caractères
+        String startDateString = twoDaysAgo.format(formatter);
+        String endDateString = currentDate.format(formatter);
+
+        // Interroger la base de données pour obtenir les données entre ces deux dates
+        return sensorDataRepository.findByDateBetweenAndSensorId(sensor_id,startDateString, endDateString);
+    }
+    public Map<String, List<SensorData>> getAllSensorsDataForLastTwoDays(){
+        List<SensorData> AllSensor = sensorDataRepository.findAll();
+        Map<String, List<SensorData>> MapSensorsData = new HashMap<>();
+        for (SensorData sensor:AllSensor) {
+           List<SensorData> sensorData = getSensorDataForLastTwoDays(sensor.getSensor_id());
+            MapSensorsData.put(sensor.getSensor_id(),sensorData);
+        }
+        return MapSensorsData;
     }
 
     private SensorDataDTO convertToDTO(SensorData sensorData) {

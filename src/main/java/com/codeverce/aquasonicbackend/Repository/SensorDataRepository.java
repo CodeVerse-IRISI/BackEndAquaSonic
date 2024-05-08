@@ -16,4 +16,7 @@ public interface SensorDataRepository extends MongoRepository<SensorData, String
     List<SensorData> findBySensorId(String sensorId);
 
     List<SensorData> findAll();
+
+    @Query("{ 'sensor_id' : ?0, 'date' : { $gte : ?1, $lte : ?2 } }")
+    List<SensorData> findByDateBetweenAndSensorId(String sensor_id , String startDate  , String EndDate);
 }
