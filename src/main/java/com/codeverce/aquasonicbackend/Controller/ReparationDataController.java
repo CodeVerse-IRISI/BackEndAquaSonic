@@ -15,7 +15,7 @@ public class ReparationDataController {
     private ReparationDataService reparationDataService;
 
     @GetMapping("/checkReparation/{sensorId}")
-    public String checkReparation(@PathVariable String sensorId) {
+    public List<String> checkReparation(@PathVariable String sensorId) {
         return reparationDataService.checkReparation(sensorId);
     }
 }

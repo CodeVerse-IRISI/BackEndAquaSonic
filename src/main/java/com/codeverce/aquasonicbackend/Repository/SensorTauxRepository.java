@@ -14,6 +14,12 @@ public interface SensorTauxRepository extends MongoRepository<SensorData, String
     @Query("{ 'sensor_id' : ?0 }")
 
     List<SensorData> findAllBySensorIdOrderByDateAsc(String sensor_id, Pageable pageable);
+    @Query(value = "{}", fields = "{'sensor_id': 1}")
+    List<SensorIdProjection> findAllSensorIds();
+
+    interface SensorIdProjection {
+        String getSensor_id();
+    }
 
 }
 

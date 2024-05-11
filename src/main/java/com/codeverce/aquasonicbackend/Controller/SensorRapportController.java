@@ -19,8 +19,8 @@ public class SensorRapportController {
     private SensorRapportService sensorRapportService;
 
     @GetMapping("/sensor/{sensor_id}")
-    public Map<String, Map<String, List<Boolean>>> getSensorDataForToday(@PathVariable String sensor_id) {
-        ResponseEntity<Map<String, Map<String, List<Boolean>>>> responseEntity = sensorRapportService.getSensorRapportForDate(sensor_id);
+    public Map<String, Map<String, List<String>>> getSensorDataForToday(@PathVariable String sensor_id) {
+        ResponseEntity<Map<String, Map<String, List<String>>>> responseEntity = sensorRapportService.getSensorRapportForDate(sensor_id);
         return responseEntity.getBody();
     }
 }

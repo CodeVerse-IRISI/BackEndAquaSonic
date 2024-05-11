@@ -8,17 +8,22 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Map;
+
 @RestController
-@RequestMapping("/api/Rapport")
+@RequestMapping("/api/Couleur")
 public class SensorTauxController {
 
     @Autowired
     private SensorTauxService sensorTauxService;
 
-    @GetMapping("/leakStatus/{sensor_id}")
-    public ResponseEntity<String> getLeakStatusForSensor(@PathVariable String sensor_id) {
-        ResponseEntity<String> responseEntity = sensorTauxService.getLeakStatusForSensor(sensor_id);
-        return responseEntity;
+    @GetMapping("/leakStatus")
+    public ResponseEntity<Map<String, Double>> getAllLeakStatus() {
+        return sensorTauxService.getAllLeakStatus();
+    }
+
+    @GetMapping("/nb_fuite/{sensor_id}")
+    public double getLeakPercentageForSensor(@PathVariable("sensor_id") String sensorId) {
+        return sensorTauxService.getLeaknb_sensourForSensor(sensorId);
     }
 }
-
