@@ -8,12 +8,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
+<<<<<<< HEAD
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+=======
+import java.util.Date;
+import java.util.List;
+>>>>>>> 756c04ebadff9c2eac12169af9b3708ada3657cb
 import java.util.stream.Collectors;
 
 @Service
@@ -31,6 +36,12 @@ public class SensorService {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         String formattedDate = dateFormat.format(dateFromDB);
 
+<<<<<<< HEAD
+=======
+        // Affichage de la date formatée
+        System.out.println("Date formatée : " + formattedDate);
+
+>>>>>>> 756c04ebadff9c2eac12169af9b3708ada3657cb
         // Récupérer les données des capteurs pour aujourd'hui
         List<SensorData> sensorDataList = sensorDataRepository.findBySensor_idAndDate(sensor_id,formattedDate);
 
@@ -64,6 +75,7 @@ public class SensorService {
         }
     }
 
+<<<<<<< HEAD
     // Méthode pour calculer la gravité de la fuite
     public double calculateSensorLeakGravity(String sensor_id) {
         int leakRate = (int) calculateRateForToday(sensor_id);
@@ -141,10 +153,20 @@ public class SensorService {
             MapSensorsData.put(sensor.getSensor_id(),sensorData);
         }
         return MapSensorsData;
+=======
+
+
+    public List<SensorData> getSensorDataBySensorId(String sensor_id){
+       return sensorDataRepository.findBySensorId(sensor_id);
+>>>>>>> 756c04ebadff9c2eac12169af9b3708ada3657cb
     }
 
     private SensorDataDTO convertToDTO(SensorData sensorData) {
         return modelMapper.map(sensorData, SensorDataDTO.class);
     }
 
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 756c04ebadff9c2eac12169af9b3708ada3657cb

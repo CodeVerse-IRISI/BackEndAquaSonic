@@ -3,6 +3,7 @@ package com.codeverce.aquasonicbackend.Controller;
 import com.codeverce.aquasonicbackend.DTO.SensorDataDTO;
 import com.codeverce.aquasonicbackend.Model.SensorData;
 import com.codeverce.aquasonicbackend.Service.SensorService;
+<<<<<<< HEAD
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,6 +11,12 @@ import java.util.List;
 import java.util.Map;
 
 @CrossOrigin
+=======
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+>>>>>>> 756c04ebadff9c2eac12169af9b3708ada3657cb
 @RestController
 @RequestMapping("/api/AquaSonic")
 public class SensorController {
@@ -21,6 +28,15 @@ public class SensorController {
         this.sensorService = sensorService;
     }
 
+<<<<<<< HEAD
+=======
+
+    @GetMapping("/SensorDta/{sensor_id}")
+    public List<SensorData> getListDataySensorId(@PathVariable String sensor_id) {
+        return sensorService.getSensorDataBySensorId(sensor_id);
+    }
+
+>>>>>>> 756c04ebadff9c2eac12169af9b3708ada3657cb
     @GetMapping("/SensorDataForToday/{sensor_id}")
     public List<SensorDataDTO> GetSensorDataForToday(@PathVariable String sensor_id) {
         return sensorService.getSensorDataForToday(sensor_id);
@@ -29,6 +45,7 @@ public class SensorController {
     public double getSensorRateLeak(@PathVariable String sensor_id){
         return sensorService.calculateRateForToday(sensor_id);
     }
+<<<<<<< HEAD
     @GetMapping("/SeriousDegreeLeak/{sensor_id}")
     public double GetSensorGravityRate(@PathVariable String sensor_id){
         return sensorService.calculateSensorLeakGravity(sensor_id);
@@ -49,3 +66,7 @@ public class SensorController {
     }
 
 }
+=======
+
+}
+>>>>>>> 756c04ebadff9c2eac12169af9b3708ada3657cb
