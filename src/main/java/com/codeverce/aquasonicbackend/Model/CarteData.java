@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Data
 public class  CarteData {
     @Id
+    private String id;
     private String sensor_id;
     private double X;
     private double Y;
