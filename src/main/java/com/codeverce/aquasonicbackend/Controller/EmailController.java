@@ -20,8 +20,8 @@ public class EmailController {
     public String
     sendMail(@RequestBody EmailDetails details)
     {
-        String status = emailService.sendSimpleMail(details);
-        return status;
+        return emailService.sendSimpleMail(details);
+        
     }
 
     // Sending email with attachment
