@@ -8,9 +8,11 @@ import java.util.List;
 
 
     public interface CarteRepository extends MongoRepository<CarteData, String> {
+        @Query("{ 'sensor_id' : ?0 }")
+        CarteData findBySensorId(String sensor_id);
+
         @Query(value = "{}", fields = "{'_id': 0}")
         List<CarteRepository.CarteDataProjection> getAllCapteurs();
-
 
         interface CarteDataProjection {
             String getSensor_id();

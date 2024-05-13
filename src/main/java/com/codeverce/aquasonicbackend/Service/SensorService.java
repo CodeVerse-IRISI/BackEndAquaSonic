@@ -1,7 +1,9 @@
 package com.codeverce.aquasonicbackend.Service;
 
 import com.codeverce.aquasonicbackend.DTO.SensorDataDTO;
+import com.codeverce.aquasonicbackend.Model.CarteData;
 import com.codeverce.aquasonicbackend.Model.SensorData;
+import com.codeverce.aquasonicbackend.Repository.CarteRepository;
 import com.codeverce.aquasonicbackend.Repository.SensorDataRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,8 @@ public class SensorService {
     private SensorDataRepository sensorDataRepository;
     @Autowired
     private ModelMapper modelMapper;
+    @Autowired
+    private CarteRepository carteRepository;
 
     public List<SensorDataDTO> getSensorDataForToday(String sensor_id) {
         // Date récupérée depuis MongoDB
@@ -30,9 +34,6 @@ public class SensorService {
         // Formatage de la date
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         String formattedDate = dateFormat.format(dateFromDB);
-
-        // Affichage de la date formatée
-        System.out.println("Date formatée : " + formattedDate);
 
         // Récupérer les données des capteurs pour aujourd'hui
         List<SensorData> sensorDataList = sensorDataRepository.findBySensor_idAndDate(sensor_id,formattedDate);
@@ -70,13 +71,15 @@ public class SensorService {
 
     // Méthode pour calculer la gravité de la fuite
     public double calculateSensorLeakGravity(String sensor_id) {
+
+        //mettre a jour le nb de fuite de chaque capteur
+        detectLeakAndUpdateCount(sensor_id);
         int leakRate = (int) calculateRateForToday(sensor_id);
         // Récupérer les données des capteurs pour aujourd'hui
         List<SensorDataDTO> sensorDataList = getSensorDataForToday(sensor_id);
         // Comparer la moyenne avec un seuil prédéfini
         double threshold = -5; // Assurez-vous que le seuil est correctement défini
         int count = 0;
-
         if (leakRate == 100) {
             if (!sensorDataList.isEmpty()) {
                 for (SensorDataDTO appel : sensorDataList) {
@@ -145,9 +148,26 @@ public class SensorService {
         return MapSensorsData;
     }
 
+
+    // Méthode pour mettre à jour le nombre de fuites
+    public void detectLeakAndUpdateCount(String sensor_id) {
+        int leakRate = (int) calculateRateForToday(sensor_id);
+        if(leakRate >=75){
+            // Augmenter le nombre de fuites
+            CarteData sensor = carteRepository.findBySensorId(sensor_id);
+            if (sensor != null) {
+                sensor.setNb_fuite(sensor.getNb_fuite() + 1);
+                carteRepository.save(sensor);
+            } else {
+                System.out.println("Capteur non trouvé : " + sensor_id);
+            }
+        }
+    }
+
     public List<SensorData> getSensorDataBySensorId(String sensor_id){
        return sensorDataRepository.findBySensorId(sensor_id);
     }
+
 
     private SensorDataDTO convertToDTO(SensorData sensorData) {
         return modelMapper.map(sensorData, SensorDataDTO.class);
