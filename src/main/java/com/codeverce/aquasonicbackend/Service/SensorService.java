@@ -5,7 +5,6 @@ import com.codeverce.aquasonicbackend.Model.SensorData;
 import com.codeverce.aquasonicbackend.Repository.SensorDataRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
@@ -15,8 +14,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Date;
-import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
