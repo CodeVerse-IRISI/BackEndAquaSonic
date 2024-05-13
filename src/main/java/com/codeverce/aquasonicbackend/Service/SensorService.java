@@ -5,7 +5,6 @@ import com.codeverce.aquasonicbackend.Model.SensorData;
 import com.codeverce.aquasonicbackend.Repository.SensorDataRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
@@ -15,8 +14,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Date;
-import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -137,67 +134,16 @@ public class SensorService {
         // Interroger la base de données pour obtenir les données entre ces deux dates
         return sensorDataRepository.findByDateBetweenAndSensorId(sensor_id,startDateString, endDateString);
     }
-  
-    public Map<String, List<SensorData>> getAllSensorsDataForLastTwoDays(){
+
+    public Map<String, List<SensorData>> getAllSensorsDataForLastTwoDays() {
         List<SensorData> AllSensor = sensorDataRepository.findAll();
         Map<String, List<SensorData>> MapSensorsData = new HashMap<>();
-        for (SensorData sensor:AllSensor) {
-           List<SensorData> sensorData = getSensorDataForLastTwoDays(sensor.getSensor_id());
-            MapSensorsData.put(sensor.getSensor_id(),sensorData);
+        for (SensorData sensor : AllSensor) {
+            List<SensorData> sensorData = getSensorDataForLastTwoDays(sensor.getSensor_id());
+            MapSensorsData.put(sensor.getSensor_id(), sensorData);
         }
         return MapSensorsData;
-
-
-    // Méthode pour calculer la moyenne des tensions d'un appel
-    private double calculateAverageTension(double[] tensions) {
-        double sum = 0.0;
-        for (double tension : tensions) {
-            sum += tension;
-        }
-        return sum / tensions.length;
     }
-
-    public Map<String, Double> AllSensorDegreeGravity(){
-        List<SensorData> AllSensor = sensorDataRepository.findAll();
-        Map<String, Double> SensorsGravity = new HashMap<>();
-        for (SensorData sensor:AllSensor) {
-            double gravity= calculateSensorLeakGravity(sensor.getSensor_id());
-            SensorsGravity.put(sensor.getSensor_id(),gravity);
-        }
-        return SensorsGravity;
-    }
-
-
-
-
-    public List<SensorData> getSensorDataForLastTwoDays(String sensor_id){
-       // Date actuelle
-        LocalDate currentDate = LocalDate.now();
-
-        // Date il y a deux jours
-        LocalDate twoDaysAgo = currentDate.minusDays(2);
-
-        // Formatter pour la date
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
-        // Convertir les dates en chaînes de caractères
-        String startDateString = twoDaysAgo.format(formatter);
-        String endDateString = currentDate.format(formatter);
-
-        // Interroger la base de données pour obtenir les données entre ces deux dates
-        return sensorDataRepository.findByDateBetweenAndSensorId(sensor_id,startDateString, endDateString);
-    }
-      
-    public Map<String, List<SensorData>> getAllSensorsDataForLastTwoDays(){
-        List<SensorData> AllSensor = sensorDataRepository.findAll();
-        Map<String, List<SensorData>> MapSensorsData = new HashMap<>();
-        for (SensorData sensor:AllSensor) {
-           List<SensorData> sensorData = getSensorDataForLastTwoDays(sensor.getSensor_id());
-            MapSensorsData.put(sensor.getSensor_id(),sensorData);
-        }
-        return MapSensorsData;
-     }
-
 
     public List<SensorData> getSensorDataBySensorId(String sensor_id){
        return sensorDataRepository.findBySensorId(sensor_id);

@@ -22,6 +22,7 @@ public class SensorTauxService {
 
     @Autowired
     private SensorTauxRepository sensorTauxRepository;
+
     @Autowired
     private MongoTemplate mongoTemplate;
 
