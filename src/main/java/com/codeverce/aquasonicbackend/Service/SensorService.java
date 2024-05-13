@@ -15,6 +15,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Date;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,6 +34,9 @@ public class SensorService {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         String formattedDate = dateFormat.format(dateFromDB);
 
+        // Affichage de la date formatée
+        System.out.println("Date formatée : " + formattedDate);
+
         // Récupérer les données des capteurs pour aujourd'hui
         List<SensorData> sensorDataList = sensorDataRepository.findBySensor_idAndDate(sensor_id,formattedDate);
 
@@ -42,6 +47,7 @@ public class SensorService {
 
         return sensorDataDTOList;
     }
+  
     public double calculateRateForToday(String sensor_id) {
         // Récupérer les données des capteurs pour aujourd'hui
         List<SensorDataDTO> sensorDataList = getSensorDataForToday(sensor_id);
@@ -114,6 +120,53 @@ public class SensorService {
         return SensorsGravity;
     }
 
+    public List<SensorData> getSensorDataForLastTwoDays(String sensor_id){
+       // Date actuelle
+        LocalDate currentDate = LocalDate.now();
+
+        // Date il y a deux jours
+        LocalDate twoDaysAgo = currentDate.minusDays(2);
+
+        // Formatter pour la date
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        // Convertir les dates en chaînes de caractères
+        String startDateString = twoDaysAgo.format(formatter);
+        String endDateString = currentDate.format(formatter);
+
+        // Interroger la base de données pour obtenir les données entre ces deux dates
+        return sensorDataRepository.findByDateBetweenAndSensorId(sensor_id,startDateString, endDateString);
+    }
+  
+    public Map<String, List<SensorData>> getAllSensorsDataForLastTwoDays(){
+        List<SensorData> AllSensor = sensorDataRepository.findAll();
+        Map<String, List<SensorData>> MapSensorsData = new HashMap<>();
+        for (SensorData sensor:AllSensor) {
+           List<SensorData> sensorData = getSensorDataForLastTwoDays(sensor.getSensor_id());
+            MapSensorsData.put(sensor.getSensor_id(),sensorData);
+        }
+        return MapSensorsData;
+
+
+    // Méthode pour calculer la moyenne des tensions d'un appel
+    private double calculateAverageTension(double[] tensions) {
+        double sum = 0.0;
+        for (double tension : tensions) {
+            sum += tension;
+        }
+        return sum / tensions.length;
+    }
+
+    public Map<String, Double> AllSensorDegreeGravity(){
+        List<SensorData> AllSensor = sensorDataRepository.findAll();
+        Map<String, Double> SensorsGravity = new HashMap<>();
+        for (SensorData sensor:AllSensor) {
+            double gravity= calculateSensorLeakGravity(sensor.getSensor_id());
+            SensorsGravity.put(sensor.getSensor_id(),gravity);
+        }
+        return SensorsGravity;
+    }
+
 
 
 
@@ -134,6 +187,7 @@ public class SensorService {
         // Interroger la base de données pour obtenir les données entre ces deux dates
         return sensorDataRepository.findByDateBetweenAndSensorId(sensor_id,startDateString, endDateString);
     }
+      
     public Map<String, List<SensorData>> getAllSensorsDataForLastTwoDays(){
         List<SensorData> AllSensor = sensorDataRepository.findAll();
         Map<String, List<SensorData>> MapSensorsData = new HashMap<>();
@@ -142,6 +196,11 @@ public class SensorService {
             MapSensorsData.put(sensor.getSensor_id(),sensorData);
         }
         return MapSensorsData;
+     }
+
+
+    public List<SensorData> getSensorDataBySensorId(String sensor_id){
+       return sensorDataRepository.findBySensorId(sensor_id);
     }
 
     private SensorDataDTO convertToDTO(SensorData sensorData) {
@@ -149,3 +208,4 @@ public class SensorService {
     }
 
 }
+

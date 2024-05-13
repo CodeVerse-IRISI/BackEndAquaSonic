@@ -5,11 +5,14 @@ import com.codeverce.aquasonicbackend.Model.SensorData;
 import com.codeverce.aquasonicbackend.Service.SensorService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.Map;
-
 @CrossOrigin
+import org.springframework.web.bind.annotation.*;
+import java.util.List;
+
+
+
 @RestController
 @RequestMapping("/api/AquaSonic")
 public class SensorController {
@@ -19,6 +22,11 @@ public class SensorController {
 
     public SensorController(SensorService sensorService) {
         this.sensorService = sensorService;
+    }
+
+    @GetMapping("/SensorDta/{sensor_id}")
+    public List<SensorData> getListDataySensorId(@PathVariable String sensor_id) {
+        return sensorService.getSensorDataBySensorId(sensor_id);
     }
 
     @GetMapping("/SensorDataForToday/{sensor_id}")
@@ -47,5 +55,4 @@ public class SensorController {
     public Map<String, List<SensorData>> GetAllSensorsDataFortwoDays(){
         return  sensorService.getAllSensorsDataForLastTwoDays();
     }
-
 }
