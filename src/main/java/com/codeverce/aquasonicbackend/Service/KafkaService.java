@@ -25,6 +25,7 @@ public class KafkaService {
     @KafkaListener(topics = "sounds", groupId = "serrakhi-group")
     public void consume(String message) {
         try {
+            System.out.println("KafkaService.consume: " + message);
             SensorData sensorData = parseSensorData(message);
             processKafkaMessage(sensorData);
         } catch (Exception e) {
@@ -38,14 +39,13 @@ public class KafkaService {
     }
 
     private SensorData parseSensorData(String message) throws Exception {
+        ObjectMapper objectMapper = new ObjectMapper();
         JsonNode rootNode = objectMapper.readTree(message);
-        Entry<String, JsonNode> entry = rootNode.fields().next();
-        String sensorId = entry.getKey();
-        JsonNode sensorDataNode = entry.getValue();
-        SensorData sensorData = objectMapper.treeToValue(sensorDataNode, SensorData.class);
-        sensorData.setSensor_id(sensorId);
+        SensorData sensorData = objectMapper.treeToValue(rootNode, SensorData.class);
+
         return sensorData;
     }
+
 
     private void saveSensorData(SensorData sensorData) {
         sensorDataRepository.save(sensorData);
