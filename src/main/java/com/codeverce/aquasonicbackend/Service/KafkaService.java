@@ -8,45 +8,46 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
+import java.util.Map.Entry;
+
 @Service
 public class KafkaService {
 
+    private final SensorDataRepository sensorDataRepository;
+    private final ObjectMapper objectMapper;
+
     @Autowired
-    private SensorDataRepository sensorDataRepository;
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    public KafkaService(SensorDataRepository sensorDataRepository, ObjectMapper objectMapper) {
+        this.sensorDataRepository = sensorDataRepository;
+        this.objectMapper = objectMapper;
+    }
 
     @KafkaListener(topics = "sounds", groupId = "serrakhi-group")
     public void consume(String message) {
         try {
-            // Parse the JSON message
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode rootNode = objectMapper.readTree(message);
-
-            // Iterate over each entry in the JSON message
-            rootNode.fields().forEachRemaining(entry -> {
-                String sensorId = entry.getKey();
-                JsonNode sensorDataNode = entry.getValue();
-
-                try {
-                    // Map the sensorDataNode to a SensorData object
-                    SensorData sensorData = objectMapper.treeToValue(sensorDataNode, SensorData.class);
-
-                    // Set the sensor_id from the key
-                    sensorData.setSensor_id(sensorId);
-
-                    // Save the SensorData object to MongoDB
-                    sensorDataRepository.save(sensorData);
-                } catch (Exception e) {
-                    System.err.println("Error processing message for sensor ID " + sensorId + ": " + e.getMessage());
-                }
-            });
+            SensorData sensorData = parseSensorData(message);
+            processKafkaMessage(sensorData);
         } catch (Exception e) {
             System.err.println("Error processing message: " + e.getMessage());
         }
     }
 
     public void processKafkaMessage(SensorData sensorData) {
-        sensorDataRepository.save(sensorData);
+        saveSensorData(sensorData);
+        // I have intention to add some triggers here to be relatable with other functionality
     }
 
+    private SensorData parseSensorData(String message) throws Exception {
+        JsonNode rootNode = objectMapper.readTree(message);
+        Entry<String, JsonNode> entry = rootNode.fields().next();
+        String sensorId = entry.getKey();
+        JsonNode sensorDataNode = entry.getValue();
+        SensorData sensorData = objectMapper.treeToValue(sensorDataNode, SensorData.class);
+        sensorData.setSensor_id(sensorId);
+        return sensorData;
+    }
+
+    private void saveSensorData(SensorData sensorData) {
+        sensorDataRepository.save(sensorData);
+    }
 }
