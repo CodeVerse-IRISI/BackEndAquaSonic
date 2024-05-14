@@ -28,11 +28,11 @@ public class SensorController {
 
     @GetMapping("/SensorDataForToday/{sensor_id}")
     public List<SensorDataDTO> GetSensorDataForToday(@PathVariable String sensor_id) {
-        return sensorService.getSensorDataForToday(sensor_id);
+        return sensorService.getSensorData(sensor_id);
     }
     @GetMapping("/rateLeak/{sensor_id}")
     public double getSensorRateLeak(@PathVariable String sensor_id){
-        return sensorService.calculateRateForToday(sensor_id);
+        return sensorService.calculateRate(sensor_id);
     }
     @GetMapping("/SeriousDegreeLeak/{sensor_id}")
     public double GetSensorGravityRate(@PathVariable String sensor_id){
@@ -46,10 +46,10 @@ public class SensorController {
 
     @GetMapping("/GetSensorDataFortwoDays/{sensor_id}")
     public List<SensorData> GetSensorDataFortwoDays(@PathVariable String sensor_id){
-        return sensorService.getSensorDataForLastTwoDays(sensor_id);
+        return sensorService.getSensorData(sensor_id, 2);
     }
     @GetMapping("/GetAllSensorsDataFortwoDays")
     public Map<String, List<SensorData>> GetAllSensorsDataFortwoDays(){
-        return  sensorService.getAllSensorsDataForLastTwoDays();
+        return  sensorService.getAllSensorsData(2);
     }
 }

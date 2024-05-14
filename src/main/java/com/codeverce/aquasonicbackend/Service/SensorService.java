@@ -27,7 +27,7 @@ public class SensorService {
     @Autowired
     private CarteRepository carteRepository;
 
-    public List<SensorDataDTO> getSensorDataForToday(String sensor_id) {
+    public List<SensorDataDTO> getSensorData(String sensor_id) {
         // Date récupérée depuis MongoDB
         Date dateFromDB = new Date();
 
@@ -45,10 +45,44 @@ public class SensorService {
 
         return sensorDataDTOList;
     }
-  
-    public double calculateRateForToday(String sensor_id) {
+
+    public List<SensorDataDTO> getSensorData(String sensor_id, Date date) {
+        // Format the date
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String formattedDate = dateFormat.format(date);
+
+        // Retrieve sensor data for the given sensor ID and date
+        List<SensorData> sensorDataList = sensorDataRepository.findBySensor_idAndDate(sensor_id, formattedDate);
+
+        // Map SensorData to SensorDataDTO
+        List<SensorDataDTO> sensorDataDTOList = sensorDataList.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+
+        return sensorDataDTOList;
+    }
+
+    public List<SensorData> getSensorData(String sensor_id, int numberOfDays){
+        // Date actuelle
+        LocalDate currentDate = LocalDate.now();
+
+        // Date il y a deux jours
+        LocalDate twoDaysAgo = currentDate.minusDays(2);
+
+        // Formatter pour la date
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        // Convertir les dates en chaînes de caractères
+        String startDateString = twoDaysAgo.format(formatter);
+        String endDateString = currentDate.format(formatter);
+
+        // Interroger la base de données pour obtenir les données entre ces deux dates
+        return sensorDataRepository.findByDateBetweenAndSensorId(sensor_id,startDateString, endDateString);
+    }
+
+    public double calculateRate(String sensor_id) {
         // Récupérer les données des capteurs pour aujourd'hui
-        List<SensorDataDTO> sensorDataList = getSensorDataForToday(sensor_id);
+        List<SensorDataDTO> sensorDataList = getSensorData(sensor_id);
 
         // Compter le nombre total d'appels détectés aujourd'hui
         int totalCalls = sensorDataList.size();
@@ -69,14 +103,37 @@ public class SensorService {
         }
     }
 
+    public double calculateRate(String sensor_id, Date date) {
+        // Retrieve sensor data for the given sensor ID and date
+        List<SensorDataDTO> sensorDataList = getSensorData(sensor_id, date);
+
+        // Calculate the total number of calls detected today
+        int totalCalls = sensorDataList.size();
+
+        // Calculate the number of calls detected as a leak today
+        long leakCalls = sensorDataList.stream()
+                .filter(data -> data.getLeak() == 1)
+                .count();
+
+        // Check if the total is not zero
+        if (totalCalls != 0) {
+            // Calculate the leak rate
+            double leakRate = (double) leakCalls / totalCalls * 100;
+            System.out.printf("taux :"+ leakRate);
+            return leakRate;
+        } else {
+            return 0;
+        }
+    }
+
     // Méthode pour calculer la gravité de la fuite
     public double calculateSensorLeakGravity(String sensor_id) {
 
         //mettre a jour le nb de fuite de chaque capteur
         detectLeakAndUpdateCount(sensor_id);
-        int leakRate = (int) calculateRateForToday(sensor_id);
+        int leakRate = (int) calculateRate(sensor_id);
         // Récupérer les données des capteurs pour aujourd'hui
-        List<SensorDataDTO> sensorDataList = getSensorDataForToday(sensor_id);
+        List<SensorDataDTO> sensorDataList = getSensorData(sensor_id);
         // Comparer la moyenne avec un seuil prédéfini
         double threshold = -5; // Assurez-vous que le seuil est correctement défini
         int count = 0;
@@ -120,29 +177,11 @@ public class SensorService {
         return SensorsGravity;
     }
 
-    public List<SensorData> getSensorDataForLastTwoDays(String sensor_id){
-       // Date actuelle
-        LocalDate currentDate = LocalDate.now();
-
-        // Date il y a deux jours
-        LocalDate twoDaysAgo = currentDate.minusDays(2);
-
-        // Formatter pour la date
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
-        // Convertir les dates en chaînes de caractères
-        String startDateString = twoDaysAgo.format(formatter);
-        String endDateString = currentDate.format(formatter);
-
-        // Interroger la base de données pour obtenir les données entre ces deux dates
-        return sensorDataRepository.findByDateBetweenAndSensorId(sensor_id,startDateString, endDateString);
-    }
-
-    public Map<String, List<SensorData>> getAllSensorsDataForLastTwoDays() {
+    public Map<String, List<SensorData>> getAllSensorsData(int numberOfDays) {
         List<SensorData> AllSensor = sensorDataRepository.findAll();
         Map<String, List<SensorData>> MapSensorsData = new HashMap<>();
         for (SensorData sensor : AllSensor) {
-            List<SensorData> sensorData = getSensorDataForLastTwoDays(sensor.getSensor_id());
+            List<SensorData> sensorData = getSensorData(sensor.getSensor_id(),numberOfDays );
             MapSensorsData.put(sensor.getSensor_id(), sensorData);
         }
         return MapSensorsData;
@@ -151,7 +190,7 @@ public class SensorService {
 
     // Méthode pour mettre à jour le nombre de fuites
     public void detectLeakAndUpdateCount(String sensor_id) {
-        int leakRate = (int) calculateRateForToday(sensor_id);
+        int leakRate = (int) calculateRate(sensor_id);
         if(leakRate >=75){
             // Augmenter le nombre de fuites
             CarteData sensor = carteRepository.findBySensorId(sensor_id);
