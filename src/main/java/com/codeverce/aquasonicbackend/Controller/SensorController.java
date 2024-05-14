@@ -21,9 +21,9 @@ public class SensorController {
         this.sensorService = sensorService;
     }
 
-    @GetMapping("/SensorDta/{sensor_id}")
-    public List<SensorData> getListDataySensorId(@PathVariable String sensor_id) {
-        return sensorService.getSensorDataBySensorId(sensor_id);
+    @GetMapping("/SensorData/{sensor_id}")
+    public List<SensorData> getListDataBySensorId(@PathVariable String sensor_id) {
+        return sensorService.getAllSensorData(sensor_id);
     }
 
     @GetMapping("/SensorDataForToday/{sensor_id}")
@@ -34,6 +34,7 @@ public class SensorController {
     public double getSensorRateLeak(@PathVariable String sensor_id){
         return sensorService.calculateRate(sensor_id);
     }
+
     @GetMapping("/SeriousDegreeLeak/{sensor_id}")
     public double GetSensorGravityRate(@PathVariable String sensor_id){
         return sensorService.calculateSensorLeakGravity(sensor_id);
@@ -44,12 +45,14 @@ public class SensorController {
         return ResponseEntity.ok(sensorsGravity);
     }
 
-    @GetMapping("/GetSensorDataFortwoDays/{sensor_id}")
-    public List<SensorData> GetSensorDataFortwoDays(@PathVariable String sensor_id){
-        return sensorService.getSensorData(sensor_id, 2);
+    @GetMapping("/GetSensorDataForNDays/{sensor_id}/{numberOfDays}")
+    public List<SensorData> GetSensorDataForNDays(@PathVariable("sensor_id") String sensorId, @PathVariable("numberOfDays") int numberOfDays) {
+        return sensorService.getSensorData(sensorId, numberOfDays);
     }
-    @GetMapping("/GetAllSensorsDataFortwoDays")
-    public Map<String, List<SensorData>> GetAllSensorsDataFortwoDays(){
-        return  sensorService.getAllSensorsData(2);
+
+    @GetMapping("/GetAllSensorsDataForNDays/{numberOfDays}")
+    public Map<String, List<SensorData>> GetAllSensorsDataForNDays(@PathVariable int numberOfDays) {
+        return sensorService.getAllSensorsData(numberOfDays);
     }
+
 }

@@ -13,22 +13,13 @@ public class AmplitudeService {
     @Autowired
     private AmplitudeRepository amplitudeRepository;
 
-    public LocalDate getFirstDayForSensor(String sensorId) {
+    public LocalDate getAmplitudes(String sensorId,int numberOfDay) {
         List<SensorData> sensorDataList = amplitudeRepository.findSensorDataBySensorId(sensorId);
         if (sensorDataList.isEmpty()) {
             return null;
         }
-        String firstDateString = sensorDataList.get(0).getDate();
+        String firstDateString = sensorDataList.get(numberOfDay-1).getDate();
         return LocalDate.parse(firstDateString);
-    }
-
-    public LocalDate getSecondDayForSensor(String sensorId) {
-        List<SensorData> sensorDataList = amplitudeRepository.findSensorDataBySensorId(sensorId);
-        if (sensorDataList.size() < 2) {
-            return null; // Retourner null si la liste ne contient pas assez de données
-        }
-        String secondDateString = sensorDataList.get(1).getDate();
-        return LocalDate.parse(secondDateString);
     }
 
     public List<double[]> getAmplitudesForSensorOnDay(String sensorId, LocalDate day) {

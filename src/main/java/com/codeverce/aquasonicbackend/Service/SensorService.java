@@ -203,10 +203,9 @@ public class SensorService {
         }
     }
 
-    public List<SensorData> getSensorDataBySensorId(String sensor_id){
+    public List<SensorData> getAllSensorData(String sensor_id){
        return sensorDataRepository.findBySensorId(sensor_id);
     }
-
 
     private SensorDataDTO convertToDTO(SensorData sensorData) {
         return modelMapper.map(sensorData, SensorDataDTO.class);

@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 @RestController
@@ -21,7 +22,7 @@ public class GraviteController {
 
     @GetMapping("/sensor/{sensorId}/amplitudes")
     public List<List<Double>> getLastAmplitudesForSensor(@PathVariable String sensorId) {
-        List<List<Double>> lastAmplitudes = graviteService.getLastAmplitudesForSensor(sensorId);
+        List<List<Double>> lastAmplitudes = new ArrayList<>();
         if (lastAmplitudes == null || lastAmplitudes.isEmpty()) {
             return Collections.emptyList();
         } else {

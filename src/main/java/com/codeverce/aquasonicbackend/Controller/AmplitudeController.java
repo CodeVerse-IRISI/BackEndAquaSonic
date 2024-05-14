@@ -16,21 +16,12 @@ public class AmplitudeController {
     @Autowired
     private AmplitudeService amplitudeService;
 
-    @GetMapping("/{sensorId}/firstDay")
-    public List<double[]> getAmplitudesForSensorOnFirstDay(@PathVariable String sensorId) {
-        LocalDate firstDay = amplitudeService.getFirstDayForSensor(sensorId);
+    @GetMapping("/{sensorId}/{numberOfDay}")
+    public List<double[]> getAmplitudesForSensorOnFirstDay(@PathVariable String sensorId,@PathVariable int numberOfDay) {
+        LocalDate firstDay = amplitudeService.getAmplitudes(sensorId,numberOfDay);
         if (firstDay == null) {
             return new ArrayList<>();
         }
         return amplitudeService.getAmplitudesForSensorOnDay(sensorId, firstDay);
-    }
-
-    @GetMapping("/{sensorId}/secondDay")
-    public List<double[]> getAmplitudesForSensorOnSecondDay(@PathVariable String sensorId) {
-        LocalDate secondDay = amplitudeService.getSecondDayForSensor(sensorId);
-        if (secondDay == null) {
-            return new ArrayList<>();
-        }
-        return amplitudeService.getAmplitudesForSensorOnDay(sensorId, secondDay);
     }
 }
