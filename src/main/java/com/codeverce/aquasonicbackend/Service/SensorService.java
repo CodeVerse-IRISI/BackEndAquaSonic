@@ -28,7 +28,7 @@ public class SensorService {
     private CarteRepository carteRepository;
 
     public List<SensorDataDTO> getSensorData(String sensor_id) {
-        // Date récupérée depuis MongoDB
+
         Date dateFromDB = new Date();
 
         // Formatage de la date
@@ -67,7 +67,7 @@ public class SensorService {
         LocalDate currentDate = LocalDate.now();
 
         // Date il y a deux jours
-        LocalDate twoDaysAgo = currentDate.minusDays(2);
+        LocalDate twoDaysAgo = currentDate.minusDays(numberOfDays);
 
         // Formatter pour la date
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -135,7 +135,7 @@ public class SensorService {
         // Récupérer les données des capteurs pour aujourd'hui
         List<SensorDataDTO> sensorDataList = getSensorData(sensor_id);
         // Comparer la moyenne avec un seuil prédéfini
-        double threshold = -5; // Assurez-vous que le seuil est correctement défini
+        double threshold = -5;
         int count = 0;
         if (leakRate == 100) {
             if (!sensorDataList.isEmpty()) {
@@ -191,7 +191,7 @@ public class SensorService {
     // Méthode pour mettre à jour le nombre de fuites
     public void detectLeakAndUpdateCount(String sensor_id) {
         int leakRate = (int) calculateRate(sensor_id);
-        if(leakRate >=75){
+        if(leakRate >=50){
             // Augmenter le nombre de fuites
             CarteData sensor = carteRepository.findBySensorId(sensor_id);
             if (sensor != null) {
@@ -210,6 +210,7 @@ public class SensorService {
     private SensorDataDTO convertToDTO(SensorData sensorData) {
         return modelMapper.map(sensorData, SensorDataDTO.class);
     }
+
 
 }
 
