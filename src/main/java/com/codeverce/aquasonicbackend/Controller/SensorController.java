@@ -6,7 +6,12 @@ import com.codeverce.aquasonicbackend.Service.SensorService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+<<<<<<< HEAD
 import javax.xml.crypto.Data;
+=======
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+>>>>>>> 368370555b1b1c1fa1ece4516e299fc901c1ab01
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +24,7 @@ public class SensorController {
 
 
     private final SensorService sensorService;
+    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
     public SensorController(SensorService sensorService) {
         this.sensorService = sensorService;
@@ -27,6 +33,17 @@ public class SensorController {
     @GetMapping("/SensorData/{sensor_id}")
     public List<SensorData> getListDataBySensorId(@PathVariable String sensor_id) {
         return sensorService.getAllSensorData(sensor_id);
+    }
+
+    @GetMapping("/SensorDataByDate/{sensor_id}/{dateStr}")
+    public List<SensorDataDTO> getListData(@PathVariable String sensor_id,@PathVariable String dateStr) {
+        Date date = null;
+        try {
+            date = dateFormat.parse(dateStr);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return sensorService.getSensorData(sensor_id, date);
     }
 
     @GetMapping("/SensorDataForToday/{sensor_id}")
