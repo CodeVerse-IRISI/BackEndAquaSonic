@@ -27,6 +27,8 @@ public class CarteService {
         this.sensorTauxRepository = sensorTauxRepository;
     }
 
+    @Autowired
+    SensorService sensorService;
 
 
     public List<Capteur> getAllCapteurs() {
@@ -44,7 +46,7 @@ public class CarteService {
         }
 
         // Obtenir le pourcentage de fuites pour le capteur spécifié
-        double leakPercentage = getLeakPercentageForSensor(sensorId);
+        double leakPercentage = sensorService.calculateRate(sensorId);
 
         // Déterminer le statut en fonction du pourcentage de fuites
         String status = "non fuite"; // par défaut
@@ -68,30 +70,4 @@ public class CarteService {
 
         return resultMap;
     }
-    private double getLeakPercentageForSensor(String sensorId) {
-        // Définir un objet Pageable pour récupérer les premiers quatre résultats
-        Pageable pageable = PageRequest.of(0, 4);
-
-        // Récupérer tous les enregistrements triés par date pour le capteur spécifié
-        List<SensorData> allData = sensorTauxRepository.findAllBySensorIdOrderByDateAsc(sensorId, pageable);
-
-        if (allData.isEmpty()) {
-            System.out.println("Aucune donnée n'a été récupérée pour le capteur avec l'ID : " + sensorId);
-            return 0.0; // Retourner 0 si aucune donnée n'est trouvée
-        }
-
-        // Limiter les résultats aux quatre premiers enregistrements
-        List<SensorData> firstFourData = allData.subList(0, Math.min(allData.size(), 4));
-
-        // Compter le nombre total de fuites parmi les quatre premiers enregistrements
-        long totalLeaks = firstFourData.stream().filter(data -> data.getLeak() == 1).count();
-
-        // Calculer le pourcentage de fuites
-        double leakPercentage = (double) (totalLeaks * 100) / 4;
-
-        return leakPercentage;
-    }
-
-
-
 }
