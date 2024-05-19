@@ -5,16 +5,15 @@ package com.codeverce.aquasonicbackend.Controller;
 import com.codeverce.aquasonicbackend.DTO.Capteur;
 import com.codeverce.aquasonicbackend.Service.CarteService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
+@CrossOrigin
 public class CarteController {
 
     @Autowired

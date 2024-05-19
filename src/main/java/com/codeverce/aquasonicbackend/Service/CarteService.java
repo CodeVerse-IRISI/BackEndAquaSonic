@@ -2,12 +2,8 @@ package com.codeverce.aquasonicbackend.Service;
 
 import com.codeverce.aquasonicbackend.DTO.Capteur;
 import com.codeverce.aquasonicbackend.Model.CarteData;
-import com.codeverce.aquasonicbackend.Model.SensorData;
 import com.codeverce.aquasonicbackend.Repository.CarteRepository;
-import com.codeverce.aquasonicbackend.Repository.SensorTauxRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -19,12 +15,11 @@ import java.util.stream.Collectors;
 public class CarteService {
 
     private final CarteRepository carteRepository;
-    private final SensorTauxRepository sensorTauxRepository;
+
 
     @Autowired
-    public CarteService(CarteRepository carteRepository, SensorTauxRepository sensorTauxRepository) {
+    public CarteService(CarteRepository carteRepository) {
         this.carteRepository = carteRepository;
-        this.sensorTauxRepository = sensorTauxRepository;
     }
 
     @Autowired
