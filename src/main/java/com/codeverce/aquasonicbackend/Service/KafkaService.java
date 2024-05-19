@@ -17,6 +17,9 @@ public class KafkaService {
     private final ObjectMapper objectMapper;
 
     @Autowired
+    private SensorService sensorService;
+
+    @Autowired
     public KafkaService(SensorDataRepository sensorDataRepository, ObjectMapper objectMapper) {
         this.sensorDataRepository = sensorDataRepository;
         this.objectMapper = objectMapper;
@@ -35,7 +38,13 @@ public class KafkaService {
 
     public void processKafkaMessage(SensorData sensorData) {
         saveSensorData(sensorData);
-        // I have intention to add some triggers here to be relatable with other functionality
+        // Attendre 5 secondes avant de verifier s'il y'a fuite ou non
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+        sensorService.detectLeakAndUpdateCount(sensorData.getSensor_id());
     }
 
     private SensorData parseSensorData(String message) throws Exception {

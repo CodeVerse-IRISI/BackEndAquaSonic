@@ -66,9 +66,9 @@ public class SensorController {
         return sensorService.getSensorData(sensorId, numberOfDays);
     }
 
-    @GetMapping("/GetAllSensorsDataForNDays/{numberOfDays}")
-    public Map<String, List<SensorData>> GetAllSensorsDataForNDays(@PathVariable int numberOfDays) {
-        return sensorService.getAllSensorsData(numberOfDays);
+    @GetMapping("/GetSensorData/{sensor_id}/{date}")
+    public List<SensorDataDTO> GetSensorData(@PathVariable("sensor_id") String sensorId, @PathVariable("date") Date date){
+       return sensorService.getSensorData(sensorId,date);
     }
 
 }
