@@ -6,12 +6,8 @@ import com.codeverce.aquasonicbackend.Service.SensorService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-<<<<<<< HEAD
-import javax.xml.crypto.Data;
-=======
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
->>>>>>> 368370555b1b1c1fa1ece4516e299fc901c1ab01
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
