@@ -3,7 +3,6 @@ package com.codeverce.aquasonicbackend.Controller;
 
 
 import com.codeverce.aquasonicbackend.DTO.Capteur;
-import com.codeverce.aquasonicbackend.Model.CarteData;
 import com.codeverce.aquasonicbackend.Service.CarteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
