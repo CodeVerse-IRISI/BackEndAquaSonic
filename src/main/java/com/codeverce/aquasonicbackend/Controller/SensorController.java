@@ -60,15 +60,17 @@ public class SensorController {
         Map<String, Double> sensorsGravity = sensorService.AllSensorDegreeGravity();
         return ResponseEntity.ok(sensorsGravity);
     }
+    @GetMapping("/Couleur/leakStatus")
+    public ResponseEntity<Map<String, Double>> GetAllSensorsRateLeak(){
+        Map<String, Double> sensorsGravity = sensorService.AllSensorsRateLeak();
+        return ResponseEntity.ok(sensorsGravity);
+    }
 
     @GetMapping("/GetSensorDataForNDays/{sensor_id}/{numberOfDays}")
     public List<SensorData> GetSensorDataForNDays(@PathVariable("sensor_id") String sensorId, @PathVariable("numberOfDays") int numberOfDays) {
         return sensorService.getSensorData(sensorId, numberOfDays);
     }
 
-    @GetMapping("/GetSensorData/{sensor_id}/{date}")
-    public List<SensorDataDTO> GetSensorData(@PathVariable("sensor_id") String sensorId, @PathVariable("date") Date date){
-       return sensorService.getSensorData(sensorId,date);
-    }
+
 
 }

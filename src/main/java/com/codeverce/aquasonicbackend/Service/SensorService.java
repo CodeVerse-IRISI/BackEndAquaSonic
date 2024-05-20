@@ -177,6 +177,16 @@ public class SensorService {
         return SensorsGravity;
     }
 
+    public Map<String, Double> AllSensorsRateLeak(){
+        List<SensorData> AllSensor = sensorDataRepository.findAll();
+        Map<String, Double> SensorsRateLeak = new HashMap<>();
+        for (SensorData sensor:AllSensor) {
+            double rate= calculateRate(sensor.getSensor_id());
+            SensorsRateLeak.put(sensor.getSensor_id(),rate);
+        }
+        return SensorsRateLeak;
+    }
+
     public Map<String, List<SensorData>> getAllSensorsData(int numberOfDays) {
         List<SensorData> AllSensor = sensorDataRepository.findAll();
         Map<String, List<SensorData>> MapSensorsData = new HashMap<>();
