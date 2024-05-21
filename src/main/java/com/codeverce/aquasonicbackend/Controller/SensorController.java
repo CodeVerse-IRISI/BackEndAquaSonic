@@ -2,6 +2,7 @@ package com.codeverce.aquasonicbackend.Controller;
 
 import com.codeverce.aquasonicbackend.DTO.SensorDataDTO;
 import com.codeverce.aquasonicbackend.Model.SensorData;
+import com.codeverce.aquasonicbackend.Service.KafkaService;
 import com.codeverce.aquasonicbackend.Service.SensorService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,10 +21,12 @@ public class SensorController {
 
 
     private final SensorService sensorService;
+    private final KafkaService kafkaService;
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-    public SensorController(SensorService sensorService) {
+    public SensorController(SensorService sensorService,KafkaService kafkaService) {
         this.sensorService = sensorService;
+        this.kafkaService= kafkaService;
     }
 
     @GetMapping("/SensorData/{sensor_id}")
@@ -69,6 +72,15 @@ public class SensorController {
     @GetMapping("/GetSensorDataForNDays/{sensor_id}/{numberOfDays}")
     public List<SensorData> GetSensorDataForNDays(@PathVariable("sensor_id") String sensorId, @PathVariable("numberOfDays") int numberOfDays) {
         return sensorService.getSensorData(sensorId, numberOfDays);
+    }
+
+    @PostMapping("/incrementNbLeak")
+    public void incrementNbLeak(@RequestBody SensorData sensorData){
+        kafkaService.updateNbOfleak(sensorData);
+    }
+    @PostMapping("/incrementNbRepair")
+    public void incrementNbRepair(@RequestBody SensorData sensorData){
+        kafkaService.updateNbOfRepair(sensorData);
     }
 
 

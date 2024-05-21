@@ -16,7 +16,6 @@ public class CarteService {
 
     private final CarteRepository carteRepository;
 
-
     @Autowired
     public CarteService(CarteRepository carteRepository) {
         this.carteRepository = carteRepository;
@@ -44,7 +43,7 @@ public class CarteService {
         double leakPercentage = sensorService.calculateRate(sensorId);
 
         // Déterminer le statut en fonction du pourcentage de fuites
-        String status = "non fuite"; // par défaut
+        String status = "non fuite";
 
         if (leakPercentage > 50) {
             status = "fuite";
@@ -54,15 +53,13 @@ public class CarteService {
         Map<String, Object> resultMap = new HashMap<>();
 
         resultMap.put("sensor_id", carteData.getSensor_id());
-
         resultMap.put("droite_id", carteData.getDroite_id());
         resultMap.put("gauche_id", carteData.getGauche_id());
         resultMap.put("nb_fuite", carteData.getNb_fuite());
         resultMap.put("nb_reparation", carteData.getNb_reparation());
-
-        // Ajouter le pourcentage de fuites comme champ supplémentaire
         resultMap.put("Status", status);
 
         return resultMap;
     }
+
 }
