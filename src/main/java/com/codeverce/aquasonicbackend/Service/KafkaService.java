@@ -39,7 +39,7 @@ public class KafkaService {
         this.objectMapper = objectMapper;
     }
 
-    @KafkaListener(topics = "sounds", groupId = "codeverc")
+    @KafkaListener(topics = "sounds", groupId = "serrakhi-group")
     public void consume(String message) {
         try {
             System.out.println("KafkaService.consume: " + message);
