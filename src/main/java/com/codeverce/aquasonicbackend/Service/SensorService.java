@@ -96,7 +96,6 @@ public class SensorService {
         if (totalCalls != 0) {
             // Calculer le taux de fuite
             double leakRate = (double) leakCalls / totalCalls * 100;
-            System.out.printf("taux :"+ leakRate);
             return leakRate;
         } else {
             return 0;
@@ -197,18 +196,18 @@ public class SensorService {
 
     // Méthode pour mettre à jour le nombre de fuites
     public void detectLeakAndUpdateCount(String sensor_id, String date) {
+        CarteData sensor = carteRepository.findBySensorId(sensor_id);
+        sensor.setDateLastFuite(date);
         int leakRate = (int) calculateRate(sensor_id);
         if(leakRate >=50){
             // Augmenter le nombre de fuites
-            CarteData sensor = carteRepository.findBySensorId(sensor_id);
             if (sensor != null) {
                 sensor.setNb_fuite(sensor.getNb_fuite() + 1);
-                sensor.setDateLastFuite(date);
-                carteRepository.save(sensor);
             } else {
                 System.out.println("Capteur non trouvé : " + sensor_id);
             }
         }
+        carteRepository.save(sensor);
     }
 
     public List<SensorData> getAllSensorData(String sensor_id){
