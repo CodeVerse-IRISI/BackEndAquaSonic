@@ -47,13 +47,13 @@ public class KafkaService {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        // Attendre 5 secondes avant de verifier s'il y'a fuite ou non
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-        sensorService.detectLeakAndUpdateCount(sensorData.getSensor_id());
+//        // Attendre 5 secondes avant de verifier s'il y'a fuite ou non
+//        try {
+//            Thread.sleep(5000);
+//        } catch (InterruptedException e) {
+//            Thread.currentThread().interrupt();
+//        }
+//        sensorService.detectLeakAndUpdateCount(sensorData.getSensor_id());
     }
 
     private SensorData parseSensorData(String message) throws Exception {
