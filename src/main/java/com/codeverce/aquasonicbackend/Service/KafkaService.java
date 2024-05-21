@@ -1,6 +1,8 @@
 package com.codeverce.aquasonicbackend.Service;
 
+import com.codeverce.aquasonicbackend.Model.CarteData;
 import com.codeverce.aquasonicbackend.Model.SensorData;
+import com.codeverce.aquasonicbackend.Repository.CarteRepository;
 import com.codeverce.aquasonicbackend.Repository.SensorDataRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -8,13 +10,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
-import java.util.Map.Entry;
+import javax.xml.catalog.Catalog;
 
 @Service
 public class KafkaService {
 
     private final SensorDataRepository sensorDataRepository;
     private final ObjectMapper objectMapper;
+    private String date;
+    @Autowired
+    private CarteRepository carteRepository;
 
     @Autowired
     private SensorService sensorService;
@@ -38,13 +43,15 @@ public class KafkaService {
 
     public void processKafkaMessage(SensorData sensorData) {
         saveSensorData(sensorData);
-        // Attendre 5 secondes avant de verifier s'il y'a fuite ou non
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
+        CarteData sensor = carteRepository.findBySensorId(sensorData.getSensor_id());
+        System.out.println("sensor:"+sensor);
+        if(sensorData.getLeak()==1){
+            date = sensor.getDateLastFuite();
+            System.out.println("date:"+date);
+            if(date != null && !date.equals(sensorData.getDate())){
+               sensorService.detectLeakAndUpdateCount(sensorData.getSensor_id(),sensorData.getDate());
+            }
         }
-        sensorService.detectLeakAndUpdateCount(sensorData.getSensor_id());
     }
 
     private SensorData parseSensorData(String message) throws Exception {
@@ -54,7 +61,6 @@ public class KafkaService {
 
         return sensorData;
     }
-
 
     private void saveSensorData(SensorData sensorData) {
         sensorDataRepository.save(sensorData);

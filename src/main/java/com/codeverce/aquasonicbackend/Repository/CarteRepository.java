@@ -11,4 +11,5 @@ public interface CarteRepository extends MongoRepository<CarteData, String> {
 
     @Query(value = "{}", fields = "{'_id': 0}")
     List<CarteData> getAllCapteurs();
+
 }
