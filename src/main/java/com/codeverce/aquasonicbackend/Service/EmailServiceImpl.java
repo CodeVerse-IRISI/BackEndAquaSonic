@@ -1,7 +1,7 @@
 package com.codeverce.aquasonicbackend.Service;
 
 import java.io.File;
-import com.codeverce.aquasonicbackend.Repository.EmailService;
+
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

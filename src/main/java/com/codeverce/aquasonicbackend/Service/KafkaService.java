@@ -7,8 +7,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
-
-import java.util.Map.Entry;
+import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.WebSocketSession;
+import java.io.IOException;
+import java.util.Map;
 
 @Service
 public class KafkaService {
@@ -18,6 +20,8 @@ public class KafkaService {
 
     @Autowired
     private SensorService sensorService;
+    @Autowired
+    private SensorDataWebSocketHandler webSocketHandler;
 
     @Autowired
     public KafkaService(SensorDataRepository sensorDataRepository, ObjectMapper objectMapper) {
@@ -38,6 +42,11 @@ public class KafkaService {
 
     public void processKafkaMessage(SensorData sensorData) {
         saveSensorData(sensorData);
+        try {
+            broadcastSensorDataToWebSocketClients();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         // Attendre 5 secondes avant de verifier s'il y'a fuite ou non
         try {
             Thread.sleep(5000);
@@ -53,6 +62,17 @@ public class KafkaService {
         SensorData sensorData = objectMapper.treeToValue(rootNode, SensorData.class);
 
         return sensorData;
+    }
+
+    private void broadcastSensorDataToWebSocketClients() throws IOException {
+        //return a json with All Sensor Degree Gravity
+        Map<String, Double> sensorsGravity = sensorService.AllSensorDegreeGravity();
+        String sensorsGravityJson = objectMapper.writeValueAsString(sensorsGravity);
+        for (WebSocketSession session : webSocketHandler.getSessions()) {
+            if (session.isOpen()) {
+                session.sendMessage(new TextMessage(sensorsGravityJson));
+            }
+        }
     }
 
 
