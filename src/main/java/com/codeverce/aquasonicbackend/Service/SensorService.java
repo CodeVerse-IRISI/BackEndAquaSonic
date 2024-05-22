@@ -145,10 +145,8 @@ public class SensorService {
                 double gravityRate = ((double) count / sensorDataList.size()) * 100;
                return gravityRate;
             } else {
-                System.out.println("La liste des données de capteur est vide");
             }
         } else {
-            System.out.println("Le taux de réalité de fuite est < 100%");
         }
         return 0;
     }

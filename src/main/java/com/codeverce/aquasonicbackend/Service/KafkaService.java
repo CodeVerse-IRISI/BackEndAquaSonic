@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.Map;
 
 
@@ -53,13 +54,13 @@ public class KafkaService {
     public void processKafkaMessage(SensorData sensorData) {
         System.out.printf("sensordata yyyy :"+sensorData);
         saveSensorData(sensorData);
+        updateNbOfleak(sensorData);
+        updateNbOfRepair(sensorData);
         try {
-            broadcastSensorDataToWebSocketClients();
+            broadcastSensorDataToWebSocketClients(sensorData.getSensor_id());
         } catch (IOException e) {
             e.printStackTrace();
         }
-        updateNbOfleak(sensorData);
-        updateNbOfRepair(sensorData);
     }
 
     public void updateNbOfleak(SensorData sensorData){
@@ -71,12 +72,6 @@ public class KafkaService {
             if (date != null && !date.equals(sensorData.getDate())) {
                 sensorService.detectLeakAndUpdateCount(sensorData.getSensor_id(), sensorData.getDate());
                 }
-
-            try {
-                broadcastSensorDataToWebSocketClients();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
             }
         }
     public void updateNbOfRepair(SensorData sensorData){
@@ -99,9 +94,10 @@ public class KafkaService {
             return sensorData;
         }
 
-    private void broadcastSensorDataToWebSocketClients() throws IOException {
+    private void broadcastSensorDataToWebSocketClients(String id) throws IOException {
         //return a json with All Sensor Degree Gravity
-        Map<String, Double> sensorsGravity = sensorService.AllSensorDegreeGravity();
+        Map<String, Double> sensorsGravity = new HashMap<>();
+        sensorsGravity.put(id, sensorService.calculateSensorLeakGravity(id));
         String sensorsGravityJson = objectMapper.writeValueAsString(sensorsGravity);
         for (WebSocketSession session : webSocketHandler.getSessions()) {
             if (session.isOpen()) {

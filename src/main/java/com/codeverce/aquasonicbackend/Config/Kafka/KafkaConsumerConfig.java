@@ -30,7 +30,7 @@ public class KafkaConsumerConfig {
         configProps.put(ConsumerConfig.GROUP_ID_CONFIG, "serrakhi-group");
         configProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, keyDeserializer);
         configProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, valueDeserializer);
-        configProps.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest"); // Changed to consume from latest offset
+        configProps.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
         return new DefaultKafkaConsumerFactory<>(configProps);
     }
 
