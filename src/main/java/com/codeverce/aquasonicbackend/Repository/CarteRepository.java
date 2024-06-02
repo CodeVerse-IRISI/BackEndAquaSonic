@@ -3,20 +3,13 @@ package com.codeverce.aquasonicbackend.Repository;
 import com.codeverce.aquasonicbackend.Model.CarteData;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
-
 import java.util.List;
 
+public interface CarteRepository extends MongoRepository<CarteData, String> {
+    @Query("{ 'sensor_id' : ?0 }")
+    CarteData findBySensorId(String sensorId);
 
-    public interface CarteRepository extends MongoRepository<CarteData, String> {
-        @Query(value = "{}", fields = "{'_id': 0}")
-        List<CarteRepository.CarteDataProjection> getAllCapteurs();
+    @Query(value = "{}", fields = "{'_id': 0}")
+    List<CarteData> getAllCapteurs();
 
-
-        interface CarteDataProjection {
-            String getSensor_id();
-            Double getX();
-            Double getY();
-        }
-    }
-
-
+}

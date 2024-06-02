@@ -25,10 +25,7 @@ Before you begin, make sure you have the following installed on your system:
 ## Usage
 Once your application is installed and running, you can interact with it in various ways:
 ### API Endpoints
-This application exposes REST API endpoints that can be used to perform different operations. Here are some examples of endpoints you can use:
-- GET /api/AquaSonic/SeriousDegreeLeak/{sensor_id}: Retrieve the serious degree of a leak for a specific sensor.
-- POST /api/AquaSonic/SendSms : Send a notification message (SMS) to alert the responsible parties about a serious degree
-
+This application exposes REST API endpoints that can be used to perform different operations. 
 ## Contributing
 Contributions are welcome! Please open an issue or submit a pull request with suggestions, improvements, or feature requests.
 

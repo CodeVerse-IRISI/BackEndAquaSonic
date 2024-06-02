@@ -1,38 +1,41 @@
 package com.codeverce.aquasonicbackend.Service;
 
-
+import com.codeverce.aquasonicbackend.DTO.Capteur;
 import com.codeverce.aquasonicbackend.Model.CarteData;
 import com.codeverce.aquasonicbackend.Repository.CarteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
-
 public class CarteService {
 
+    private final CarteRepository carteRepository;
+
     @Autowired
-    private CarteRepository carteRepository;
-
-    public List<CarteData> getAllCapteurs() {
-        List<CarteRepository.CarteDataProjection> allCapteurs = carteRepository.getAllCapteurs();
-        List<CarteData> filteredCapteurs = new ArrayList<>();
-
-        for (CarteRepository.CarteDataProjection capteur : allCapteurs) {
-            CarteData filteredCapteur = new CarteData();
-            filteredCapteur.setSensor_id(capteur.getSensor_id());
-            filteredCapteur.setX(capteur.getX());
-            filteredCapteur.setY(capteur.getY());
-            filteredCapteurs.add(filteredCapteur);
-        }
-
-        return filteredCapteurs;
+    public CarteService(CarteRepository carteRepository) {
+        this.carteRepository = carteRepository;
     }
+
+    @Autowired
+    SensorService sensorService;
+
+
+    public List<Capteur> getAllCapteurs() {
+        List<CarteData> carteDataList = carteRepository.getAllCapteurs();
+        return carteDataList.stream()
+                .map(carteData -> new Capteur(carteData.getSensor_id(), carteData.getX(), carteData.getY()))
+                .collect(Collectors.toList());
+    }
+
+
+    public CarteData findInformationSensorId(String sensorId) {
+        CarteData carteData = carteRepository.findBySensorId(sensorId);
+        return carteData;
+    }
+
 }
-
-
-
-
