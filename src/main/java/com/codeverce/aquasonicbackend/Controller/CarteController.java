@@ -26,7 +26,7 @@ public class CarteController {
         this.carteService= carteService;
     }
 
-    @PostMapping("/save")
+    @PostMapping("/SaveInfoSensor")
     public ResponseEntity<CarteData> saveCarteData(@RequestBody CarteData carteData) {
         CarteData savedCarteData = carteService.saveCarteData(carteData);
         return new ResponseEntity<>(savedCarteData, HttpStatus.CREATED);
