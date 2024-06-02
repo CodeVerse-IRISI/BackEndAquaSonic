@@ -181,17 +181,6 @@ public class SensorService {
         return SensorsRateLeak;
     }
 
-    public Map<String, List<SensorData>> getAllSensorsData(int numberOfDays) {
-        List<SensorData> AllSensor = sensorDataRepository.findAll();
-        Map<String, List<SensorData>> MapSensorsData = new HashMap<>();
-        for (SensorData sensor : AllSensor) {
-            List<SensorData> sensorData = getSensorData(sensor.getSensor_id(),numberOfDays );
-            MapSensorsData.put(sensor.getSensor_id(), sensorData);
-        }
-        return MapSensorsData;
-    }
-
-
     // Méthode pour mettre à jour le nombre de fuites
     public void detectLeakAndUpdateCount(String sensor_id, String date) {
         CarteData sensor = carteRepository.findBySensorId(sensor_id);

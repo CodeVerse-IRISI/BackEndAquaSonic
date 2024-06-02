@@ -33,33 +33,9 @@ public class CarteService {
     }
 
 
-    public Map<String, Object> findInformationSensorIdWithAdditionalField(String sensorId) {
+    public CarteData findInformationSensorId(String sensorId) {
         CarteData carteData = carteRepository.findBySensorId(sensorId);
-        if (carteData == null) {
-            return null;
-        }
-
-        // Obtenir le pourcentage de fuites pour le capteur spécifié
-        double leakPercentage = sensorService.calculateRate(sensorId);
-
-        // Déterminer le statut en fonction du pourcentage de fuites
-        String status = "non fuite";
-
-        if (leakPercentage > 50) {
-            status = "fuite";
-        }
-
-        // Créer un objet Map pour stocker les champs de CarteData avec le champ supplémentaire
-        Map<String, Object> resultMap = new HashMap<>();
-
-        resultMap.put("sensor_id", carteData.getSensor_id());
-        resultMap.put("droite_id", carteData.getDroite_id());
-        resultMap.put("gauche_id", carteData.getGauche_id());
-        resultMap.put("nb_fuite", carteData.getNb_fuite());
-        resultMap.put("nb_reparation", carteData.getNb_reparation());
-        resultMap.put("Status", status);
-
-        return resultMap;
+        return carteData;
     }
 
 }

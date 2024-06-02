@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
@@ -20,20 +19,17 @@ public class CarteController {
     @Autowired
     private CarteService carteService;
 
-
+    //api retourne tous les capteur intaller avec leurs positions
     @GetMapping("/capteurs")
     public List<Capteur> getAllCapteurs() {
-        List<Capteur> capteurList = carteService.getAllCapteurs().stream()
-                .map(carteData -> new Capteur(carteData.getSensor_id(), carteData.getX(), carteData.getY()))
-
-                .collect(Collectors.toList());
+        List<Capteur> capteurList = carteService.getAllCapteurs();
         return capteurList;
     }
 
-
+    //api retourne les details d'un sensor
     @GetMapping("/information/{sensor_id}")
-    public Map<String, Object> getSensorInformation(@PathVariable("sensor_id") String sensorId) {
-        return carteService.findInformationSensorIdWithAdditionalField(sensorId);
+    public CarteData getSensorInformation(@PathVariable("sensor_id") String sensorId) {
+        return carteService.findInformationSensorId(sensorId);
     }
 
 }
