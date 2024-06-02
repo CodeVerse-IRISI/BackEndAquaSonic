@@ -14,7 +14,8 @@ import java.util.stream.Collectors;
 @Service
 public class CarteService {
 
-    private final CarteRepository carteRepository;
+    @Autowired
+    private CarteRepository carteRepository;
 
     @Autowired
     public CarteService(CarteRepository carteRepository) {
@@ -61,5 +62,10 @@ public class CarteService {
 
         return resultMap;
     }
+
+    public CarteData saveCarteData(CarteData carteData) {
+        return carteRepository.save(carteData);
+    }
+
 
 }
