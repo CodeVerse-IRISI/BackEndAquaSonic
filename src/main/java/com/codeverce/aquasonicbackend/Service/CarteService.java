@@ -14,7 +14,8 @@ import java.util.stream.Collectors;
 @Service
 public class CarteService {
 
-    private final CarteRepository carteRepository;
+    @Autowired
+    private CarteRepository carteRepository;
 
     @Autowired
     public CarteService(CarteRepository carteRepository) {
@@ -37,5 +38,10 @@ public class CarteService {
         CarteData carteData = carteRepository.findBySensorId(sensorId);
         return carteData;
     }
+
+    public CarteData saveCarteData(CarteData carteData) {
+        return carteRepository.save(carteData);
+    }
+
 
 }

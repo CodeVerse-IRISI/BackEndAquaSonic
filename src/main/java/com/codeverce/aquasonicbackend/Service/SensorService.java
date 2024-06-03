@@ -205,6 +205,5 @@ public class SensorService {
         return modelMapper.map(sensorData, SensorDataDTO.class);
     }
 
-
 }
 
