@@ -1,6 +1,7 @@
 package com.codeverce.aquasonicbackend.Service;
 
 import com.codeverce.aquasonicbackend.Model.CarteData;
+import com.codeverce.aquasonicbackend.Model.EmailDetails;
 import com.codeverce.aquasonicbackend.Model.SensorData;
 import com.codeverce.aquasonicbackend.Repository.CarteRepository;
 import com.codeverce.aquasonicbackend.Repository.SensorDataRepository;
@@ -28,7 +29,8 @@ public class KafkaService {
 
     @Autowired
     private CarteRepository carteRepository;
-
+    @Autowired
+    private EmailServiceImpl emailService;
     @Autowired
     private SensorService sensorService;
     @Autowired
@@ -61,6 +63,16 @@ public class KafkaService {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        //sendEmail(sensorData);
+    }
+
+    public void sendEmail(SensorData sensorData){
+        double gravity = sensorService.calculateSensorLeakGravity(sensorData.getSensor_id());
+        if(gravity >= 75){
+            EmailDetails emailDetails = new EmailDetails("responsable@gmail.com","attension , une fuite sévére est detecté au capteur "+sensorData.getSensor_id()+"dans la date "+sensorData.getDate()+" a l'heure"+sensorData.getTime(),"fuite grave","");
+            emailService.sendSimpleMail(emailDetails);
+        }
+
     }
 
     public void updateNbOfleak(SensorData sensorData){
@@ -99,6 +111,7 @@ public class KafkaService {
         Map<String, Double> sensorsGravity = new HashMap<>();
         sensorsGravity.put(id, sensorService.calculateSensorLeakGravity(id));
         String sensorsGravityJson = objectMapper.writeValueAsString(sensorsGravity);
+
         for (WebSocketSession session : webSocketHandler.getSessions()) {
             if (session.isOpen()) {
                 session.sendMessage(new TextMessage(sensorsGravityJson));
