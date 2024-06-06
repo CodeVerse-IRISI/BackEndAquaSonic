@@ -1,4 +1,4 @@
-package com.codeverce.aquasonicbackend.Config;
+package com.codeverce.aquasonicbackend.config;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
