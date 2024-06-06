@@ -1,9 +1,10 @@
-package com.codeverce.aquasonicbackend.Service;
+package com.codeverce.aquasonicbackend.service;
 
-import com.codeverce.aquasonicbackend.Model.CarteData;
-import com.codeverce.aquasonicbackend.Model.SensorData;
-import com.codeverce.aquasonicbackend.Repository.CarteRepository;
-import com.codeverce.aquasonicbackend.Repository.SensorDataRepository;
+import com.codeverce.aquasonicbackend.handler.SensorDataWebSocketHandler;
+import com.codeverce.aquasonicbackend.entity.CarteData;
+import com.codeverce.aquasonicbackend.entity.SensorData;
+import com.codeverce.aquasonicbackend.repository.CarteRepository;
+import com.codeverce.aquasonicbackend.repository.SensorDataRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
-
+/**
+ * Service pour gérer les messages Kafka en temp reel et mise a jour les données.
+ */
 @Service
 public class KafkaService {
 
@@ -40,6 +43,11 @@ public class KafkaService {
         this.objectMapper = objectMapper;
     }
 
+    /**
+     * Kafka listener pour consommer les messages du topic "sounds".
+     *
+     * @param message Le message Kafka à consommer.
+     */
     @KafkaListener(topics = "sounds", groupId = "serrakhi-group")
     public void consume(String message) {
         try {
@@ -51,8 +59,12 @@ public class KafkaService {
         }
     }
 
+    /**
+     * Traite le message Kafka consommé, enregistre et met à jour les rapports du capteur.
+     *
+     * @param sensorData Les données du capteur à traiter.
+     */
     public void processKafkaMessage(SensorData sensorData) {
-        System.out.printf("sensordata yyyy :"+sensorData);
         saveSensorData(sensorData);
         updateNbOfleak(sensorData);
         updateNbOfRepair(sensorData);
@@ -63,6 +75,11 @@ public class KafkaService {
         }
     }
 
+    /**
+     * Met à jour le nombre de fuites si une fuite est détectée.
+     *
+     * @param sensorData Les données du capteur.
+     */
     public void updateNbOfleak(SensorData sensorData){
         CarteData sensor = carteRepository.findBySensorId(sensorData.getSensor_id());
         System.out.println("sensor:" + sensor);
@@ -71,9 +88,15 @@ public class KafkaService {
             System.out.println("date:" + date);
             if (date != null && !date.equals(sensorData.getDate())) {
                 sensorService.detectLeakAndUpdateCount(sensorData.getSensor_id(), sensorData.getDate());
-                }
             }
         }
+    }
+
+    /**
+     * Met à jour le nombre de réparations si une réparation est détectée.
+     *
+     * @param sensorData Les données du capteur.
+     */
     public void updateNbOfRepair(SensorData sensorData){
         CarteData sensor = carteRepository.findBySensorId(sensorData.getSensor_id());
         LocalDate dateLastLeak = LocalDate.parse(sensor.getDateLastFuite(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
@@ -86,16 +109,28 @@ public class KafkaService {
         }
     }
 
-        private SensorData parseSensorData (String message) throws Exception {
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode rootNode = objectMapper.readTree(message);
-            SensorData sensorData = objectMapper.treeToValue(rootNode, SensorData.class);
+    /**
+     * Analyse le message Kafka entrant en un objet SensorData.
+     *
+     * @param message Le message Kafka.
+     * @return Un objet SensorData.
+     * @throws Exception Si une erreur survient lors de l'analyse.
+     */
+    private SensorData parseSensorData(String message) throws Exception {
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode rootNode = objectMapper.readTree(message);
+        SensorData sensorData = objectMapper.treeToValue(rootNode, SensorData.class);
 
-            return sensorData;
-        }
+        return sensorData;
+    }
 
+    /**
+     * Diffuse les données du capteur à tous les clients WebSocket connectés.
+     *
+     * @param id L'identifiant du capteur.
+     * @throws IOException Si une erreur survient lors de l'envoi du message.
+     */
     private void broadcastSensorDataToWebSocketClients(String id) throws IOException {
-        //return a json with All Sensor Degree Gravity
         Map<String, Double> sensorsGravity = new HashMap<>();
         sensorsGravity.put(id, sensorService.calculateSensorLeakGravity(id));
         String sensorsGravityJson = objectMapper.writeValueAsString(sensorsGravity);
@@ -106,7 +141,11 @@ public class KafkaService {
         }
     }
 
-
+    /**
+     * Sauvegarde les données du capteur dans la base de données.
+     *
+     * @param sensorData Les données du capteur à sauvegarder.
+     */
     private void saveSensorData(SensorData sensorData) {
         sensorDataRepository.save(sensorData);
     }

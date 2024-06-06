@@ -1,10 +1,10 @@
-package com.codeverce.aquasonicbackend.Service;
+package com.codeverce.aquasonicbackend.service;
 
-import com.codeverce.aquasonicbackend.DTO.SensorDataDTO;
-import com.codeverce.aquasonicbackend.Model.CarteData;
-import com.codeverce.aquasonicbackend.Model.SensorData;
-import com.codeverce.aquasonicbackend.Repository.CarteRepository;
-import com.codeverce.aquasonicbackend.Repository.SensorDataRepository;
+import com.codeverce.aquasonicbackend.dto.SensorDataDTO;
+import com.codeverce.aquasonicbackend.entity.CarteData;
+import com.codeverce.aquasonicbackend.entity.SensorData;
+import com.codeverce.aquasonicbackend.repository.CarteRepository;
+import com.codeverce.aquasonicbackend.repository.SensorDataRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,6 +18,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * Service pour la gestion des données des capteurs.
+ */
 @Service
 public class SensorService {
     @Autowired
@@ -27,110 +30,100 @@ public class SensorService {
     @Autowired
     private CarteRepository carteRepository;
 
+    /**
+     * Récupère les données des capteurs pour aujourd'hui.
+     *
+     * @param sensor_id L'identifiant du capteur.
+     * @return Liste des données des capteurs sous forme de DTO.
+     */
     public List<SensorDataDTO> getSensorData(String sensor_id) {
-
         Date dateFromDB = new Date();
-
-        // Formatage de la date
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         String formattedDate = dateFormat.format(dateFromDB);
-
-        // Récupérer les données des capteurs pour aujourd'hui
-        List<SensorData> sensorDataList = sensorDataRepository.findBySensor_idAndDate(sensor_id,formattedDate);
-
-        // Mapper les SensorData en SensorDataDTO
-        List<SensorDataDTO> sensorDataDTOList = sensorDataList.stream()
+        List<SensorData> sensorDataList = sensorDataRepository.findBySensor_idAndDate(sensor_id, formattedDate);
+        return sensorDataList.stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
-
-        return sensorDataDTOList;
     }
 
+    /**
+     * Récupère les données des capteurs pour une date spécifique.
+     *
+     * @param sensor_id L'identifiant du capteur.
+     * @param date La date pour laquelle récupérer les données.
+     * @return Liste des données des capteurs sous forme de DTO.
+     */
     public List<SensorDataDTO> getSensorData(String sensor_id, Date date) {
-        // Format the date
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         String formattedDate = dateFormat.format(date);
-
-        // Retrieve sensor data for the given sensor ID and date
         List<SensorData> sensorDataList = sensorDataRepository.findBySensor_idAndDate(sensor_id, formattedDate);
-
-        // Map SensorData to SensorDataDTO
-        List<SensorDataDTO> sensorDataDTOList = sensorDataList.stream()
+        return sensorDataList.stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
-
-        return sensorDataDTOList;
     }
 
-    public List<SensorData> getSensorData(String sensor_id, int numberOfDays){
-        // Date actuelle
+    /**
+     * Récupère les données des capteurs pour les n derniers jours.
+     *
+     * @param sensor_id L'identifiant du capteur.
+     * @param numberOfDays Le nombre de jours pour lesquels récupérer les données.
+     * @return Liste des données des capteurs.
+     */
+    public List<SensorData> getSensorData(String sensor_id, int numberOfDays) {
         LocalDate currentDate = LocalDate.now();
-
-        // Date il y a deux jours
         LocalDate twoDaysAgo = currentDate.minusDays(numberOfDays);
-
-        // Formatter pour la date
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
-        // Convertir les dates en chaînes de caractères
         String startDateString = twoDaysAgo.format(formatter);
         String endDateString = currentDate.format(formatter);
-
-        // Interroger la base de données pour obtenir les données entre ces deux dates
-        return sensorDataRepository.findByDateBetweenAndSensorId(sensor_id,startDateString, endDateString);
+        return sensorDataRepository.findByDateBetweenAndSensorId(sensor_id, startDateString, endDateString);
     }
 
+    /**
+     * Calcule le taux de fuite pour aujourd'hui.
+     *
+     * @param sensor_id L'identifiant du capteur.
+     * @return Le taux de fuite en pourcentage.
+     */
     public double calculateRate(String sensor_id) {
-        // Récupérer les données des capteurs pour aujourd'hui
         List<SensorDataDTO> sensorDataList = getSensorData(sensor_id);
-
-        // Compter le nombre total d'appels détectés aujourd'hui
         int totalCalls = sensorDataList.size();
-
-        // Compter le nombre d'appels détectés comme une fuite aujourd'hui
         long leakCalls = sensorDataList.stream()
                 .filter(data -> data.getLeak() == 1)
                 .count();
-
-        // Vérifier si le total est différent de zéro
-        if (totalCalls != 0) {
-            // Calculer le taux de fuite
-            double leakRate = (double) leakCalls / totalCalls * 100;
-            return leakRate;
-        } else {
-            return 0;
-        }
+        return totalCalls != 0 ? (double) leakCalls / totalCalls * 100 : 0;
     }
 
+    /**
+     * Calcule le taux de fuite pour une date spécifique.
+     *
+     * @param sensor_id L'identifiant du capteur.
+     * @param date La date pour laquelle calculer le taux de fuite.
+     * @return Le taux de fuite en pourcentage.
+     */
     public double calculateRate(String sensor_id, Date date) {
-        // Retrieve sensor data for the given sensor ID and date
         List<SensorDataDTO> sensorDataList = getSensorData(sensor_id, date);
-
-        // Calculate the total number of calls detected today
         int totalCalls = sensorDataList.size();
-
-        // Calculate the number of calls detected as a leak today
         long leakCalls = sensorDataList.stream()
                 .filter(data -> data.getLeak() == 1)
                 .count();
-
-        // Check if the total is not zero
         if (totalCalls != 0) {
-            // Calculate the leak rate
             double leakRate = (double) leakCalls / totalCalls * 100;
-            System.out.printf("taux :"+ leakRate);
+            System.out.printf("taux :" + leakRate);
             return leakRate;
         } else {
             return 0;
         }
     }
 
-    // Méthode pour calculer la gravité de la fuite
+    /**
+     * Calcule la gravité de la fuite pour un capteur spécifique pour aujourd'hui.
+     *
+     * @param sensor_id L'identifiant du capteur.
+     * @return La gravité de la fuite en pourcentage.
+     */
     public double calculateSensorLeakGravity(String sensor_id) {
         int leakRate = (int) calculateRate(sensor_id);
-        // Récupérer les données des capteurs pour aujourd'hui
         List<SensorDataDTO> sensorDataList = getSensorData(sensor_id);
-        // Comparer la moyenne avec un seuil prédéfini
         double threshold = -5;
         int count = 0;
         if (leakRate == 100) {
@@ -141,18 +134,19 @@ public class SensorService {
                         count++;
                     }
                 }
-                // Calculer le taux de gravité de la fuite à partir de tous les appels
                 double gravityRate = ((double) count / sensorDataList.size()) * 100;
-               return gravityRate;
-            } else {
+                return gravityRate;
             }
-        } else {
         }
         return 0;
     }
 
-
-    // Méthode pour calculer la moyenne des tensions d'un appel
+    /**
+     * Méthode pour calculer la moyenne des tensions d'un appel.
+     *
+     * @param tensions Tableau des tensions.
+     * @return La moyenne des tensions.
+     */
     private double calculateAverageTension(double[] tensions) {
         double sum = 0.0;
         for (double tension : tensions) {
@@ -161,33 +155,47 @@ public class SensorService {
         return sum / tensions.length;
     }
 
-    public Map<String, Double> AllSensorDegreeGravity(){
+    /**
+     * Retourne une map contenant la gravité de fuite pour tous les capteurs.
+     *
+     * @return Map des identifiants des capteurs et leur gravité de fuite.
+     */
+    public Map<String, Double> AllSensorDegreeGravity() {
         List<SensorData> AllSensor = sensorDataRepository.findAll();
         Map<String, Double> SensorsGravity = new HashMap<>();
-        for (SensorData sensor:AllSensor) {
-            double gravity= calculateSensorLeakGravity(sensor.getSensor_id());
-            SensorsGravity.put(sensor.getSensor_id(),gravity);
+        for (SensorData sensor : AllSensor) {
+            double gravity = calculateSensorLeakGravity(sensor.getSensor_id());
+            SensorsGravity.put(sensor.getSensor_id(), gravity);
         }
         return SensorsGravity;
     }
 
-    public Map<String, Double> AllSensorsRateLeak(){
+    /**
+     * Retourne une map contenant le taux de fuite pour tous les capteurs.
+     *
+     * @return Map des identifiants des capteurs et leur taux de fuite.
+     */
+    public Map<String, Double> AllSensorsRateLeak() {
         List<SensorData> AllSensor = sensorDataRepository.findAll();
         Map<String, Double> SensorsRateLeak = new HashMap<>();
-        for (SensorData sensor:AllSensor) {
-            double rate= calculateRate(sensor.getSensor_id());
-            SensorsRateLeak.put(sensor.getSensor_id(),rate);
+        for (SensorData sensor : AllSensor) {
+            double rate = calculateRate(sensor.getSensor_id());
+            SensorsRateLeak.put(sensor.getSensor_id(), rate);
         }
         return SensorsRateLeak;
     }
 
-    // Méthode pour mettre à jour le nombre de fuites
+    /**
+     * Méthode pour mettre à jour le nombre de fuites.
+     *
+     * @param sensor_id L'identifiant du capteur.
+     * @param date La date de la dernière fuite.
+     */
     public void detectLeakAndUpdateCount(String sensor_id, String date) {
         CarteData sensor = carteRepository.findBySensorId(sensor_id);
         sensor.setDateLastFuite(date);
         int leakRate = (int) calculateRate(sensor_id);
-        if(leakRate >=50){
-            // Augmenter le nombre de fuites
+        if (leakRate >= 50) {
             if (sensor != null) {
                 sensor.setNb_fuite(sensor.getNb_fuite() + 1);
             } else {
@@ -197,13 +205,23 @@ public class SensorService {
         carteRepository.save(sensor);
     }
 
-    public List<SensorData> getAllSensorData(String sensor_id){
-       return sensorDataRepository.findBySensorId(sensor_id);
+    /**
+     * Récupère toutes les données des capteurs pour un capteur spécifique.
+     *
+     * @param sensor_id L'identifiant du capteur.
+     * @return Liste des données des capteurs.
+     */
+    public List<SensorData> getAllSensorData(String sensor_id) {
+        return sensorDataRepository.findBySensorId(sensor_id);
     }
 
+    /**
+     * Convertit un objet SensorData en SensorDataDTO.
+     *
+     * @param sensorData L'objet SensorData à convertir.
+     * @return L'objet SensorDataDTO converti.
+     */
     private SensorDataDTO convertToDTO(SensorData sensorData) {
         return modelMapper.map(sensorData, SensorDataDTO.class);
     }
-
 }
-

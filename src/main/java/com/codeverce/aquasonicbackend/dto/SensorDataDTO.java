@@ -1,6 +1,10 @@
-package com.codeverce.aquasonicbackend.DTO;
+package com.codeverce.aquasonicbackend.dto;
+
 import lombok.Data;
 
+/**
+ * DTO représentant les données d'une appel.
+ */
 @Data
 public class SensorDataDTO {
     private String date;

@@ -1,4 +1,4 @@
-package com.codeverce.aquasonicbackend.Service;
+package com.codeverce.aquasonicbackend.handler;
 
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -10,6 +10,9 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
+/**
+ * Gère les connexions WebSocket et les messages entrants.
+ */
 @Service
 public class SensorDataWebSocketHandler extends TextWebSocketHandler {
 
@@ -27,6 +30,11 @@ public class SensorDataWebSocketHandler extends TextWebSocketHandler {
         System.out.println("WebSocket connection closed: " + session.getId());
     }
 
+    /**
+     * Renvoie l'ensemble des sessions WebSocket.
+     *
+     * @return L'ensemble des sessions WebSocket.
+     */
     public Set<WebSocketSession> getSessions() {
         return Collections.unmodifiableSet(sessions);
     }
