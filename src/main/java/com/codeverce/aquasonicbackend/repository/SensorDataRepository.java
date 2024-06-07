@@ -1,6 +1,6 @@
-package com.codeverce.aquasonicbackend.Repository;
+package com.codeverce.aquasonicbackend.repository;
 
-import com.codeverce.aquasonicbackend.Model.SensorData;
+import com.codeverce.aquasonicbackend.entity.SensorData;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;

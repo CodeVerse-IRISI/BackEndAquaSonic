@@ -1,4 +1,4 @@
-package com.codeverce.aquasonicbackend.Config.Kafka;
+package com.codeverce.aquasonicbackend.config.Kafka;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,6 +11,9 @@ import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Configuration pour le consommateur Kafka.
+ */
 @Configuration
 public class KafkaConsumerConfig {
 
@@ -23,6 +26,11 @@ public class KafkaConsumerConfig {
     @Value("${kafka.consumer.value.deserializer}")
     private String valueDeserializer;
 
+    /**
+     * Crée une instance de ConsumerFactory pour Kafka.
+     *
+     * @return Un ConsumerFactory configuré.
+     */
     @Bean
     public ConsumerFactory<String, String> consumerFactory() {
         Map<String, Object> configProps = new HashMap<>();
@@ -34,11 +42,15 @@ public class KafkaConsumerConfig {
         return new DefaultKafkaConsumerFactory<>(configProps);
     }
 
+    /**
+     * Crée une instance de ConcurrentKafkaListenerContainerFactory pour Kafka.
+     *
+     * @return Un ConcurrentKafkaListenerContainerFactory configuré.
+     */
     @Bean
     public ConcurrentKafkaListenerContainerFactory<String, String> kafkaListenerContainerFactory() {
         ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory());
         return factory;
     }
-
 }

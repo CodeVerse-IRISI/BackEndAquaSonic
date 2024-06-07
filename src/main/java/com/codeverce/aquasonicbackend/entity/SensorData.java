@@ -1,4 +1,4 @@
-package com.codeverce.aquasonicbackend.Model;
+package com.codeverce.aquasonicbackend.entity;
 
 import lombok.Data;
 import org.springframework.data.annotation.Id;
@@ -6,7 +6,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Arrays;
 
-
+/**
+ * Modèle représentant les données d'un capteur.
+ */
 @Document(collection = "messages")
 @Data
 public class SensorData {

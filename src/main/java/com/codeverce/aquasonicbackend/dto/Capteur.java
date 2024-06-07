@@ -1,13 +1,16 @@
-package com.codeverce.aquasonicbackend.DTO;
+package com.codeverce.aquasonicbackend.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+/**
+ * DTO pour filtre les informations sur les capteurs.
+ */
 public class Capteur {
     @JsonProperty("sensor_id")
     private String sensor_id;
 
     @JsonProperty("droite_id")
-    private String droite_id ;
+    private String droite_id;
 
     @JsonProperty("gauche_id")
     private String gauche_id;
@@ -18,14 +21,20 @@ public class Capteur {
     @JsonProperty("Y")
     private double y;
 
-    // Constructeur
+    /**
+     * Constructeur pour Capteur.
+     *
+     * @param sensor_id L'identifiant du capteur.
+     * @param x La coordonnée x du capteur.
+     * @param y La coordonnée y du capteur.
+     */
     public Capteur(String sensor_id, double x, double y) {
         this.sensor_id = sensor_id;
         this.x = x;
         this.y = y;
     }
 
-    // Getters et setters pour id
+    // Getters et setters pour sensor_id
     public String getSensor_id() {
         return sensor_id;
     }

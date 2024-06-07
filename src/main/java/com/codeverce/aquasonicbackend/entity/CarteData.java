@@ -1,10 +1,12 @@
-package com.codeverce.aquasonicbackend.Model;
+package com.codeverce.aquasonicbackend.entity;
 
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-
+/**
+ * Modèle représentant les informations pour afficher un capteur dans une carte.
+ */
 @Document(collection = "Informations")
 @Data
 public class  CarteData {
@@ -18,5 +20,4 @@ public class  CarteData {
     private String DateLastFuite;
     private int nb_fuite;
     private int nb_reparation;
-
 }
